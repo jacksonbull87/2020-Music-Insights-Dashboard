@@ -130,3 +130,5 @@ dmypy.json
 
 #secret api keys
 cm_config.py
+
+dashboard/*
