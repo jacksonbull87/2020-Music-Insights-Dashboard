@@ -51,4 +51,9 @@ def percent_change(x):
 #remove trailing zeros from cm artist ids
 def remove_trailing_zeros(number):
     from decimal import Decimal
-    return int(str(number).rstrip('0').rstrip('.'))
+    return str(number).rstrip('0').rstrip('.')
+
+#finds tracks max velocity in dataframe
+def get_tracks_maxv(title, dataframe):
+    #input track title, return title's max velocity
+    return dataframe.loc[dataframe['title'] == title]['velocity'].max()
