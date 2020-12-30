@@ -47,3 +47,8 @@ def artist_fanmetric_dict(artist_id_dict, api_token, source, since_date, until_d
 #new feature of percent change is artist listeners
 def percent_change(x):
     return ((x[1]- x[0])/x[0])*100
+
+#remove trailing zeros from cm artist ids
+def remove_trailing_zeros(number):
+    from decimal import Decimal
+    return str(number).rstrip('0').rstrip('.')
