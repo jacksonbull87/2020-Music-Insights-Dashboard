@@ -197,7 +197,16 @@ def get_track_playlist(api_token, cm_id, platform, status, since, limit):
 
 def get_artist_id(api_token, q, search_type):
     #return tuple (artist name, artist cm id)
-    response = requests.get(url='https://api.chartmetric.com/api/search',
+    retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[ 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"],)
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
+    response = http.get(url='https://api.chartmetric.com/api/search',
                             headers={'Authorization' : 'Bearer {}'.format(api_token)}, params={'q': q, 'type': search_type,
                             'limit':50}
                                 )
