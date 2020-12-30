@@ -51,4 +51,4 @@ def percent_change(x):
 #remove trailing zeros from cm artist ids
 def remove_trailing_zeros(number):
     from decimal import Decimal
-    return str(number).rstrip('0').rstrip('.')
+    return int(str(number).rstrip('0').rstrip('.'))
