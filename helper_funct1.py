@@ -39,10 +39,10 @@ def parse_data(data):
 def parse_tiktok_data(data):
     data_bucket = []
     for track in data:
-        track_tuple = (track['name'], track['tiktok_artist_names'][0], track['isrc'], track['velocity'], track['cm_track'])
+        track_tuple = (track['rank'], track['added_at'], track['name'], track['tiktok_artist_names'][0], track['isrc'], track['velocity'], track['cm_track'], track['time_on_chart', track['release_dates']])
         data_bucket.append(track_tuple)
 
-    df = pd.DataFrame(data_bucket, columns=['title', 'artist', 'isrc', 'velocity', 'cm_id'])
+    df = pd.DataFrame(data_bucket, columns=['rank', 'added_at', 'title', 'artist', 'isrc', 'velocity', 'cm_id', 'time_on_chart', 'release_dates'])
     df.dropna(subset=['isrc'], inplace=True)
     return df
 

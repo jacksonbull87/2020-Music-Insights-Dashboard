@@ -43,3 +43,7 @@ def artist_fanmetric_dict(artist_id_dict, api_token, source, since_date, until_d
     di = Convert(bucket, dictionary)
     return di
     
+
+#new feature of percent change is artist listeners
+def percent_change(x):
+    return ((x[1]- x[0])/x[0])*100
