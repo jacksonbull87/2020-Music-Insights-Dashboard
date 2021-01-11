@@ -57,3 +57,17 @@ def remove_trailing_zeros(number):
 def get_tracks_maxv(title, dataframe):
     #input track title, return title's max velocity
     return dataframe.loc[dataframe['title'] == title]['velocity'].max()
+
+def get_tracks_peak_weeklycount(title, dataframe):
+    #input track title, return title's max velocity
+    return dataframe.loc[dataframe['title'] == title]['current_plays'].max()
+
+
+def get_tracks_peak_rank(title, dataframe):
+    #input track title, return title's max velocity
+    return dataframe.loc[dataframe['title'] == title]['rank'].min()
+
+#this function takes in a string argument and returns the first tag
+#of the resulting list
+def isolate_first_tag(tag_string):
+    return tag_string.split(',')[0]
