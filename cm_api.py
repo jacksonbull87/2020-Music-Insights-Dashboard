@@ -299,3 +299,27 @@ def get_shazam_most_viral_track(api_token,date, country_code='US'):
         df1 = df.reset_index()
         return df1['title'][0], df1['artist'][0][0], df1['velocity'][0], df1['artist id'][0][0]
 
+#this function returns the current playlist count for given track within the date range
+def get_playlist_count(api_token, since_date,track_id, platform, status):
+    retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[ 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"],)
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
+    response = http.get(url='https://api.chartmetric.com/api/track/{}/{}/{}/playlists'.format(track_id,platform, status),
+                            headers={'Authorization' : 'Bearer {}'.format(api_token)}, 
+        params={'since':since_date, 'until':until_date, 'limit':100,'sortColumn':'followers'}
+                                )
+    if response.status_code == 200:
+        data = response.json()
+        chart = data['obj']
+        return len(chart)
+    else:
+        
+        print(response.status_code)
+        print(response.text)
+
