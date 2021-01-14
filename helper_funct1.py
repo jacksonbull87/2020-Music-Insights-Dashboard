@@ -37,9 +37,10 @@ def parse_data(data):
     return data[0]['name'].title(), data[0]['artist_names'][0]
 
 def parse_tiktok_data(data):
+    #parses list of track dictionaries, drops non-isrc codes, returns pandas dataframe
     data_bucket = []
     for track in data:
-        track_tuple = (track['rank'], track['added_at'], track['name'], track['tiktok_artist_names'][0], track['isrc'], track['velocity'], track['cm_track'], track['time_on_chart', track['release_dates']])
+        track_tuple = (track['rank'], track['added_at'], track['name'], track['tiktok_artist_names'][0], track['isrc'], track['velocity'], track['cm_track'], track['time_on_chart'], track['release_dates'])
         data_bucket.append(track_tuple)
 
     df = pd.DataFrame(data_bucket, columns=['rank', 'added_at', 'title', 'artist', 'isrc', 'velocity', 'cm_id', 'time_on_chart', 'release_dates'])
@@ -170,3 +171,26 @@ def top_5_cities(data_object):
     city_list = list(data_object.keys())
     return city_list[0],city_list[1],city_list[2],city_list[3], city_list[4]
 
+#this function returns the current playlist count for given track within the date range
+def get_playlist_count(api_token, since_date,track_id, platform, status):
+    retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[ 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"],)
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
+    response = http.get(url='https://api.chartmetric.com/api/track/{}/{}/{}/playlists'.format(track_id,platform, status),
+                            headers={'Authorization' : 'Bearer {}'.format(api_token)}, 
+        params={'since':since_date, 'until':until_date, 'limit':100,'sortColumn':'followers'}
+                                )
+    if response.status_code == 200:
+        data = response.json()
+        chart = data['obj']
+        return len(chart)
+    else:
+        
+        print(response.status_code)
+        print(response.text)
