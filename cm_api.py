@@ -59,9 +59,10 @@ def get_track_metadata(api_token, cm_track_id):
 
         data = response.json()
         track = data['obj']
+        return track
     else:
         pass
-    return track
+    
 
 def get_chart_data(api_token, cm_track_id, chart_type, date):
     #refer to https://api.chartmetric.com/apidoc/#api-Track-getTrackCharts for allowed values for chart_type
@@ -300,7 +301,7 @@ def get_shazam_most_viral_track(api_token,date, country_code='US'):
         return df1['title'][0], df1['artist'][0][0], df1['velocity'][0], df1['artist id'][0][0]
 
 #this function returns the current playlist count for given track within the date range
-def get_playlist_count(api_token, since_date,track_id, platform, status):
+def get_playlist_count(api_token, since_date,until_date, track_id, platform, status='current'):
     retry_strategy = Retry(
     total=3,
     backoff_factor=1,
@@ -323,3 +324,36 @@ def get_playlist_count(api_token, since_date,track_id, platform, status):
         print(response.status_code)
         print(response.text)
 
+#this function returns the current playlist reach for given track within the date range
+def get_playlist_reach(api_token, since_date,until_date, track_id, platform, status='current'):
+    retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[ 500, 502, 503, 504],
+    method_whitelist=["HEAD", "GET", "OPTIONS"],)
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    http = requests.Session()
+    http.mount("https://", adapter)
+    http.mount("http://", adapter)
+    response = http.get(url='https://api.chartmetric.com/api/track/{}/{}/{}/playlists'.format(track_id,platform, status),
+                            headers={'Authorization' : 'Bearer {}'.format(api_token)}, 
+        params={'since':since_date, 'until':until_date, 'limit':100,'sortColumn':'followers'}
+                                )
+    if response.status_code == 200:
+        data = response.json()
+        playlists = data['obj']
+        
+        tup_bucket = []
+        follower_bucket = []
+        for playlist in playlists:
+            if playlist['playlist']['followers'] == None:
+                follower_bucket.append(0)
+            else:
+                follower_bucket.append(playlist['playlist']['followers'])
+        reach = sum(follower_bucket)
+        return reach  
+        
+    else:
+        
+        print(response.status_code)
+        print(response.text)

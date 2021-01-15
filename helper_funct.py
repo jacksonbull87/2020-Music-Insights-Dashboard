@@ -70,4 +70,7 @@ def get_tracks_peak_rank(title, dataframe):
 #this function takes in a string argument and returns the first tag
 #of the resulting list
 def isolate_first_tag(tag_string):
-    return tag_string.split(',')[0]
+    if tag_string:
+        return tag_string.split(',')[0]
+    else:
+        return 'N/A'

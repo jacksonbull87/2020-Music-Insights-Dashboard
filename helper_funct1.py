@@ -171,26 +171,3 @@ def top_5_cities(data_object):
     city_list = list(data_object.keys())
     return city_list[0],city_list[1],city_list[2],city_list[3], city_list[4]
 
-#this function returns the current playlist count for given track within the date range
-def get_playlist_count(api_token, since_date,track_id, platform, status):
-    retry_strategy = Retry(
-    total=3,
-    backoff_factor=1,
-    status_forcelist=[ 500, 502, 503, 504],
-    method_whitelist=["HEAD", "GET", "OPTIONS"],)
-    adapter = HTTPAdapter(max_retries=retry_strategy)
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
-    response = http.get(url='https://api.chartmetric.com/api/track/{}/{}/{}/playlists'.format(track_id,platform, status),
-                            headers={'Authorization' : 'Bearer {}'.format(api_token)}, 
-        params={'since':since_date, 'until':until_date, 'limit':100,'sortColumn':'followers'}
-                                )
-    if response.status_code == 200:
-        data = response.json()
-        chart = data['obj']
-        return len(chart)
-    else:
-        
-        print(response.status_code)
-        print(response.text)
